@@ -44,5 +44,15 @@ public class ProfilesContextFacadeImpl implements ProfilesContextFacade {
         return null;
     }
 
+    @Override
+    public UUID getProfileIdByUserId(UUID userId) {
+        var query = new com.api.rurieats.profiles.domain.model.queries.GetProfileByUserIdQuery(new com.api.rurieats.profiles.domain.model.valueobjects.UserId(userId));
+        var profile = profileQueryService.handle(query);
+        if (profile.isPresent()) {
+            return profile.get().getId();
+        }
+        return null;
+    }
+
 
 }

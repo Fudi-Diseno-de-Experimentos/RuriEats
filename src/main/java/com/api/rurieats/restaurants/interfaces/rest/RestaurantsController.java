@@ -27,6 +27,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import com.api.rurieats.restaurants.domain.model.queries.GetAllRestaurantsQuery;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.UUID;
 
 /**
@@ -63,6 +67,21 @@ public class RestaurantsController {
             return ResponseEntity.badRequest().build();
         }
         return new ResponseEntity<>(RestaurantResourceFromEntityAssembler.toResourceFromEntity(restaurant.get()), HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    @Operation(summary = "Get all restaurants", description = "Retrieve all restaurants with pagination")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Restaurants found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+    })
+    public ResponseEntity<Page<RestaurantResource>> getAllRestaurants(
+            @Parameter(description = "Pagination information", required = false)
+            Pageable pageable) {
+        var query = new GetAllRestaurantsQuery(pageable);
+        var restaurants = restaurantQueryService.handle(query);
+        var resources = restaurants.map(RestaurantResourceFromEntityAssembler::toResourceFromEntity);
+        return ResponseEntity.ok(resources);
     }
 
     @GetMapping("/{restaurantId}")
