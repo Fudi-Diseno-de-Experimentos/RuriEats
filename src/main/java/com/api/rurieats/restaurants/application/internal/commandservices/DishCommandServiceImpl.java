@@ -7,7 +7,9 @@ import com.api.rurieats.restaurants.domain.model.commands.UpdateDishCommand;
 import com.api.rurieats.restaurants.domain.services.DishCommandService;
 import com.api.rurieats.restaurants.infrastructure.persistence.jpa.repositories.DishRepository;
 import com.api.rurieats.restaurants.infrastructure.persistence.jpa.repositories.RestaurantRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import com.api.rurieats.shared.domain.model.events.DishCreatedEvent;
 
 import java.util.Optional;
 
@@ -16,17 +18,30 @@ public class DishCommandServiceImpl implements DishCommandService {
 
     private final DishRepository dishRepository;
     private final RestaurantRepository restaurantRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public DishCommandServiceImpl(DishRepository dishRepository, RestaurantRepository restaurantRepository) {
+    public DishCommandServiceImpl(DishRepository dishRepository, RestaurantRepository restaurantRepository, ApplicationEventPublisher eventPublisher) {
         this.dishRepository = dishRepository;
         this.restaurantRepository = restaurantRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
     public Optional<Dish> handle(CreateDishCommand command) {
         return restaurantRepository.findById(command.restaurantId()).map(restaurant -> {
             Dish dish = new Dish(restaurant, command.name(), command.description(), command.price(), command.ingredients(), command.imageUrl());
-            return dishRepository.save(dish);
+            Dish savedDish = dishRepository.save(dish);
+            
+            if (savedDish.getImageUrl() != null && !savedDish.getImageUrl().isEmpty()) {
+                eventPublisher.publishEvent(new DishCreatedEvent(
+                        savedDish.getId(),
+                        savedDish.getRestaurant().getId(),
+                        savedDish.getRestaurant().getOwnerId().profileId(),
+                        savedDish.getName(),
+                        savedDish.getImageUrl()
+                ));
+            }
+            return savedDish;
         });
     }
 

@@ -1,0 +1,7 @@
+package com.api.rurieats.posts.domain.model.queries;
+
+import java.util.UUID;
+
+public record GetFeedByFollowedRestaurantsQuery(UUID userId) {
+    // TODO: Implement later
+}
