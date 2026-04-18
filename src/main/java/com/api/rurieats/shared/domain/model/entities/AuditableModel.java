@@ -7,14 +7,15 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
+import java.util.UUID;
 
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 public class AuditableModel {
-    @Id
     @Getter
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Getter
     @CreatedDate
