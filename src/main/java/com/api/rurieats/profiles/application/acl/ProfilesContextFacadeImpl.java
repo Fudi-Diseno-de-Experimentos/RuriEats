@@ -34,5 +34,15 @@ public class ProfilesContextFacadeImpl implements ProfilesContextFacade {
         return profileQueryService.handle(query).isPresent();
     }
 
+    @Override
+    public UUID getUserIdByProfileId(UUID profileId) {
+        var query = new GetProfileByIdQuery(profileId);
+        var profile = profileQueryService.handle(query);
+        if (profile.isPresent()) {
+            return profile.get().getUserId().userId();
+        }
+        return null;
+    }
+
 
 }

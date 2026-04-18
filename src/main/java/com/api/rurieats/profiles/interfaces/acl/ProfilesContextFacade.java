@@ -23,4 +23,11 @@ public interface ProfilesContextFacade {
      */
     boolean existsProfileById(UUID profileId);
 
+    /**
+     * Get the user ID associated with a profile ID
+     * @param profileId The profile ID
+     * @return The user ID or null if not found
+     */
+    UUID getUserIdByProfileId(UUID profileId);
+
 }

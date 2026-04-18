@@ -31,8 +31,6 @@ public class Profile extends AuditableAbstractAggregateRoot<Profile> {
     @Size(max = 255)
     private String avatarUrl;
 
-    @Size(min=9,max = 9)
-
     public Profile() {
         // Default constructor for JPA
     }
